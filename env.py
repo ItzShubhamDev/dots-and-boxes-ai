@@ -67,6 +67,8 @@ class DotsAndBoxesEnv(AECEnv):
       [current]                        # Turn
     ]).astype(np.int8)
 
+    return obs
+
   def _get_action_priorities(self):
     priorities = np.zeros(self.total_edges, dtype=np.int8)
 
@@ -142,10 +144,10 @@ class DotsAndBoxesEnv(AECEnv):
 
     self.board_state[action] = 1
 
-    boxs_after = self._get_box_edge_count()
-    reward = self._calculate_reward(agent, boxes_before, boxs_after, action)
+    boxes_after = self._get_box_edge_count()
+    reward = self._calculate_reward(agent, boxes_before, boxes_after, action)
 
-    completed, temp_box_delta = _check_completed_boxes(agent)
+    completed, temp_box_delta = self._check_completed_boxes(agent)
 
     if completed > 0:
       reward += completed * 5
@@ -192,9 +194,8 @@ class DotsAndBoxesEnv(AECEnv):
         if self.claimed_boxes[i, j] == 0:
           edges = self._edges_for_box(i, j)
           if all(self.board_state[edge] == 1 for edge in edges):
-            self.claimed_boxes[i, j] = agent_id
             completed += 1
-            temp_box_delta[i, j] = 1
+            temp_box_delta[i, j] = agent_id
 
     return completed, temp_box_delta
 
