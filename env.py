@@ -14,7 +14,6 @@ class DotsAndBoxesEnv(AECEnv):
     super().__init__()
     self.grid_size = grid_size
     self.total_edges = 2 * (grid_size - 1) * grid_size
-    self.action_space = Discrete(self.total_edges)
     self.agents = ["player_1", "player_2"]
     self.possible_agents = self.agents.copy()
     self.agent_selector = AgentSelector(self.agents)
@@ -51,7 +50,7 @@ class DotsAndBoxesEnv(AECEnv):
     for i in range(self.grid_size - 1):
       for j in range(self.grid_size - 1):
         edges = self._edges_for_box(i, j)
-        box_edges[i, j] = np.sum(self.board_state[edge] for edge in edges)
+        box_edges[i, j] = sum(self.board_state[edge] for edge in edges)
 
     player_1_score = np.count_nonzero(self.claimed_boxes == 1)
     player_2_score = np.count_nonzero(self.claimed_boxes == 2)
@@ -85,7 +84,7 @@ class DotsAndBoxesEnv(AECEnv):
           if self.claimed_boxes[i, j] == 0:
             edges = self._edges_for_box(i, j)
             if action in edges:
-              current_edges = np.sum(self.board_state[edge] for edge in edges)
+              current_edges = sum(self.board_state[edge] for edge in edges)
               if current_edges == 3:
                 completing_boxes += 1
               elif current_edges == 2:
@@ -204,7 +203,7 @@ class DotsAndBoxesEnv(AECEnv):
     for i in range(self.grid_size - 1):
       for j in range(self.grid_size - 1):
         edges = self._edges_for_box(i, j)
-        box_counts[i, j] = np.sum(self.board_state[edge] for edge in edges)
+        box_counts[i, j] = sum(self.board_state[edge] for edge in edges)
     return box_counts
 
   def _count_available_completions(self, agent):
@@ -213,7 +212,7 @@ class DotsAndBoxesEnv(AECEnv):
       for j in range(self.grid_size - 1):
         if self.claimed_boxes[i, j] == 0:
           edges = self._edges_for_box(i, j)
-          edge_counts = np.sum(self.board_state[edge] for edge in edges)
+          edge_counts = sum(self.board_state[edge] for edge in edges)
           if edge_counts == 3:
             count += 1
     return count
